@@ -19,14 +19,21 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 @Serialize(UserDto)
-export class UsersController {
+export default class UsersController {
     constructor(
         private userService: UsersService,
         private authService: AuthService,
     ) {}
-    @Post()
+    @Post('signup')
     async signUp(@Body() body: CreateUserDto) {
         const user = await this.authService.signUp(body.email, body.password);
+
+        return user;
+    }
+
+    @Post('signin')
+    async signIn(@Body() body: CreateUserDto) {
+        const user = await this.authService.signIn(body.email, body.password);
 
         return user;
     }
