@@ -15,14 +15,18 @@ import { GetUserByEmailDto } from 'src/dtos/get-user-by-email-query.dto';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from 'src/dtos/user.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 @Serialize(UserDto)
 export class UsersController {
-    constructor(private userService: UsersService) {}
+    constructor(
+        private userService: UsersService,
+        private authService: AuthService,
+    ) {}
     @Post()
     async signUp(@Body() body: CreateUserDto) {
-        const user = await this.userService.create(body.email, body.password);
+        const user = await this.authService.signUp(body.email, body.password);
 
         return user;
     }
