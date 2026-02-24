@@ -16,6 +16,8 @@ export class UsersService {
     }
 
     async findOne(id: number) {
+        if (!id) return null;
+
         const user = await this.repo.findOneBy({ id });
 
         if (!user)
@@ -42,7 +44,7 @@ export class UsersService {
     async delete(id: number) {
         const user = await this.findOne(id);
 
-        await this.repo.remove(user);
+        if (user) await this.repo.remove(user);
 
         return user;
     }
