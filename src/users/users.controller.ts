@@ -9,14 +9,22 @@ import {
     Post,
     Query,
     Session,
+    UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UsersService } from './users.service';
-import { GetUserByEmailDto } from 'src/dtos/get-user-by-email-query.dto';
-import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { GetUserByEmailDto } from 'src/users/dtos/get-user-by-email-query.dto';
+import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { UserDto } from 'src/dtos/user.dto';
+import { UserDto } from 'src/users/dtos/user.dto';
 import { AuthService } from './auth.service';
+import { CurrentUser } from 'src/users/decorators/current-user.decorator';
+import { User } from './users.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
+
+export interface SecureSession {
+    userId?: number | null;
+}
 
 @Controller('auth')
 @Serialize(UserDto)
@@ -27,17 +35,23 @@ export default class UsersController {
     ) {}
 
     @Get('whoami')
-    async whoAmI(@Session() session) {
-        return this.userService.findOne(session.userId);
+    @UseGuards(AuthGuard)
+    whoAmI(@CurrentUser() user: User | null) {
+        console.log(user);
+
+        return user;
     }
 
     @Get('signout')
-    async signOut(@Session() session) {
+    signOut(@Session() session: SecureSession) {
         session.userId = null;
     }
 
     @Post('signup')
-    async signUp(@Body() body: CreateUserDto, @Session() session: any) {
+    async signUp(
+        @Body() body: CreateUserDto,
+        @Session() session: SecureSession,
+    ) {
         const user = await this.authService.signUp(body.email, body.password);
 
         session.userId = user.id;
@@ -46,7 +60,10 @@ export default class UsersController {
     }
 
     @Post('signin')
-    async signIn(@Body() body: CreateUserDto, @Session() session: any) {
+    async signIn(
+        @Body() body: CreateUserDto,
+        @Session() session: SecureSession,
+    ) {
         const user = await this.authService.signIn(body.email, body.password);
 
         session.userId = user.id;

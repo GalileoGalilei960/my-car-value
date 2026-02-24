@@ -15,13 +15,12 @@ export class UsersService {
         return user;
     }
 
-    async findOne(id: number) {
+    async findOne(id: number | undefined): Promise<User | null> {
         if (!id) return null;
 
         const user = await this.repo.findOneBy({ id });
 
-        if (!user)
-            throw new NotFoundException(`User with id ${id} does not exist`);
+        if (!user) return null;
 
         return user;
     }
