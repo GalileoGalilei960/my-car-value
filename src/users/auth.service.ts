@@ -8,7 +8,15 @@ import { randomBytes, scrypt } from 'crypto';
 import { promisify } from 'util';
 import { User } from './users.entity';
 
-const scryptAsync = promisify(scrypt);
+export const scryptAsync = promisify(scrypt);
+
+// todo
+// implement class for hashing and comparing passwords
+// export const hashSaltData = (
+//     data: BinaryLike,
+//     salt?: string,
+//     length: number = 32,
+// ) => {};
 
 @Injectable()
 export class AuthService {
