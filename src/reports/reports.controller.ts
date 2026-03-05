@@ -12,6 +12,10 @@ import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UpdateReportDto } from './dtos/update-report.dto';
+import { CurrentUser } from 'src/users/decorators/current-user.decorator';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { ReportDto } from './dtos/report.dto';
 
 @Controller('reports')
 export class ReportsController {
@@ -28,17 +32,12 @@ export class ReportsController {
 
     @Post()
     @UseGuards(AuthGuard)
-    createReport(@Body() body: CreateReportDto) {
-        const { make, model, year, mileage, lng, lat, price } = body;
-        const report = this.reportsService.create(
-            make,
-            model,
-            year,
-            mileage,
-            lng,
-            lat,
-            price,
-        );
+    @Serialize(ReportDto)
+    createReport(
+        @Body() body: CreateReportDto,
+        @CurrentUser() user: CreateUserDto,
+    ) {
+        const report = this.reportsService.create(body, user);
 
         return report;
     }

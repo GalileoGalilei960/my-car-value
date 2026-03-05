@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from './reports.entity';
 import { Repository } from 'typeorm';
+import { CreateReportDto } from './dtos/create-report.dto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 
 @Injectable()
 export class ReportsService {
@@ -19,24 +21,8 @@ export class ReportsService {
         return report;
     }
 
-    async create(
-        make: string,
-        model: string,
-        year: number,
-        mileage: number,
-        lng: number,
-        lat: number,
-        price: number,
-    ) {
-        const newReport = this.repo.create({
-            make,
-            model,
-            year,
-            mileage,
-            lng,
-            lat,
-            price,
-        });
+    async create(report: CreateReportDto, user: CreateUserDto) {
+        const newReport = this.repo.create(Object.assign(report, { user }));
 
         await this.repo.save(newReport);
 
