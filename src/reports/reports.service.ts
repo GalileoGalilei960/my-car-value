@@ -30,9 +30,8 @@ export class ReportsService {
     }
 
     async update(id: number, attrs: Partial<Report>) {
-        console.log({ id });
-
         const report = await this.repo.findOneBy({ id });
+
         if (!report)
             throw new NotFoundException(`Report with id ${id} does not exist`);
 

@@ -21,16 +21,19 @@ export class User {
     @Exclude()
     password: string;
 
+    @Column({ default: false })
+    isAdmin: boolean;
+
     @OneToMany(() => Report, (report) => report.user)
     reports: Report[];
 
     @AfterUpdate()
     LogUpdate() {
-        console.log(`Elementwith id ${this.id} was updated`);
+        console.log(`Element with id ${this.id} was updated`);
     }
 
     @AfterRemove()
     LogDelete() {
-        console.log(`Elementwith id ${this.id} was deleted`);
+        console.log(`Element with id ${this.id} was deleted`);
     }
 }

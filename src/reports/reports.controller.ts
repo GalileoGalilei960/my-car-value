@@ -6,6 +6,7 @@ import {
     Param,
     Patch,
     Post,
+    Query,
     UseGuards,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
@@ -16,6 +17,9 @@ import { CurrentUser } from 'src/users/decorators/current-user.decorator';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { ReportDto } from './dtos/report.dto';
+import { ApproveReportDto } from './dtos/approve-report.dto';
+import { AdminGuard } from 'src/guards/admin.guard';
+import { QueryEstimate } from './dtos/query-estimate.dto';
 
 @Controller('reports')
 export class ReportsController {
@@ -23,6 +27,11 @@ export class ReportsController {
     @Get()
     getAllReports() {
         return this.reportsService.findAll();
+    }
+
+    @Get('estimate')
+    getEstimate(@Query() query: QueryEstimate) {
+        return query;
     }
 
     @Get('/:id')
@@ -45,6 +54,12 @@ export class ReportsController {
     @Patch('/:id')
     updateReport(@Param('id') id: number, @Body() attrs: UpdateReportDto) {
         return this.reportsService.update(id, attrs);
+    }
+
+    @UseGuards(AdminGuard)
+    @Patch('approve/:id')
+    approveReport(@Param('id') id: number, @Body() approval: ApproveReportDto) {
+        return this.reportsService.update(id, approval);
     }
 
     @Delete('/:id')

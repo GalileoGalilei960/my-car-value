@@ -48,6 +48,7 @@ export class AppModule {
                 cookieSession({
                     keys: ['secret temporary keys'],
                 }),
+                // CurrentUserMiddleware,
             )
             .forRoutes('*');
     }
