@@ -31,7 +31,7 @@ export class ReportsController {
 
     @Get('estimate')
     getEstimate(@Query() query: QueryEstimate) {
-        return query;
+        return this.reportsService.estimate(query);
     }
 
     @Get('/:id')
