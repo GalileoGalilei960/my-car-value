@@ -10,6 +10,8 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             type: 'sqlite',
             synchronize: false,
             database: this.configService.get<string>('DB_NAME'),
+            migrations: [__dirname + '/../migrations/*.ts'],
+            migrationsRun: true,
             autoLoadEntities: true,
         };
     }
