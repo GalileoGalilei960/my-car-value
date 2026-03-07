@@ -27,8 +27,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
                 });
                 break;
             case 'production':
-                console.log('we are in production');
-
                 Object.assign(dbConfig, {
                     type: 'postgres',
                     url: process.env.DATABASE_URL,
