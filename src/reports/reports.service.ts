@@ -50,18 +50,24 @@ export class ReportsService {
     }
 
     estimate({ make, model, year, lat, lng, mileage }: QueryEstimate) {
-        return this.repo
+        const subQuery = this.repo
             .createQueryBuilder()
-            .select('AVG(price)', 'price')
+            .select('price')
             .where('make = :make', { make })
             .andWhere('model = :model', { model })
             .andWhere('year - :year BETWEEN -3 AND 3', { year })
             .andWhere('lng - :lng BETWEEN -5 AND 5', { lng })
             .andWhere('lat - :lat BETWEEN -5 AND 5', { lat })
             .andWhere('approved IS TRUE')
-            .orderBy('ABS(mileage - :mileage)', 'DESC')
+            .orderBy('ABS(mileage - :mileage)', 'ASC')
             .setParameters({ mileage })
-            .limit(3)
-            .getRawMany();
+            .limit(3);
+
+        return this.repo.manager
+            .createQueryBuilder()
+            .select('AVG(t.price)', 'price')
+            .from(`(${subQuery.getQuery()})`, 't')
+            .setParameters(subQuery.getParameters())
+            .getRawOne();
     }
 }

@@ -5,13 +5,13 @@ export class InitialSchema1772885567636 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `CREATE TABLE "report" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "approved" boolean NOT NULL DEFAULT (0), "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" integer NOT NULL, "lat" integer NOT NULL, "price" integer NOT NULL, "userId" integer)`,
+            `CREATE TABLE "report" ("id" SERIAL PRIMARY KEY NOT NULL, "approved" boolean NOT NULL DEFAULT false, "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" decimal NOT NULL, "lat" decimal NOT NULL, "price" integer NOT NULL, "userId" integer)`,
         );
         await queryRunner.query(
-            `CREATE TABLE "user" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar NOT NULL, "password" varchar NOT NULL, "isAdmin" boolean NOT NULL DEFAULT (0))`,
+            `CREATE TABLE "user" ("id" SERIAL PRIMARY KEY NOT NULL, "email" varchar NOT NULL, "password" varchar NOT NULL, "isAdmin" boolean NOT NULL DEFAULT false)`,
         );
         await queryRunner.query(
-            `CREATE TABLE "temporary_report" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "approved" boolean NOT NULL DEFAULT (0), "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" integer NOT NULL, "lat" integer NOT NULL, "price" integer NOT NULL, "userId" integer, CONSTRAINT "FK_e347c56b008c2057c9887e230aa" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION)`,
+            `CREATE TABLE "temporary_report" ("id" SERIAL PRIMARY KEY NOT NULL, "approved" boolean NOT NULL DEFAULT false, "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" decimal NOT NULL, "lat" decimal NOT NULL, "price" integer NOT NULL, "userId" integer, CONSTRAINT "FK_e347c56b008c2057c9887e230aa" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION)`,
         );
         await queryRunner.query(
             `INSERT INTO "temporary_report"("id", "approved", "make", "model", "year", "mileage", "lng", "lat", "price", "userId") SELECT "id", "approved", "make", "model", "year", "mileage", "lng", "lat", "price", "userId" FROM "report"`,
@@ -27,7 +27,7 @@ export class InitialSchema1772885567636 implements MigrationInterface {
             `ALTER TABLE "report" RENAME TO "temporary_report"`,
         );
         await queryRunner.query(
-            `CREATE TABLE "report" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "approved" boolean NOT NULL DEFAULT (0), "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" integer NOT NULL, "lat" integer NOT NULL, "price" integer NOT NULL, "userId" integer)`,
+            `CREATE TABLE "report" ("id" SERIAL PRIMARY KEY NOT NULL, "approved" boolean NOT NULL DEFAULT false, "make" varchar NOT NULL, "model" varchar NOT NULL, "year" integer NOT NULL, "mileage" integer NOT NULL, "lng" decimal NOT NULL, "lat" decimal NOT NULL, "price" integer NOT NULL, "userId" integer)`,
         );
         await queryRunner.query(
             `INSERT INTO "report"("id", "approved", "make", "model", "year", "mileage", "lng", "lat", "price", "userId") SELECT "id", "approved", "make", "model", "year", "mileage", "lng", "lat", "price", "userId" FROM "temporary_report"`,
