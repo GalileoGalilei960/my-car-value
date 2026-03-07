@@ -6,13 +6,37 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
     constructor(private configService: ConfigService) {}
     createTypeOrmOptions(): TypeOrmModuleOptions {
-        return {
-            type: 'sqlite',
+        const dbConfig: TypeOrmModuleOptions = {
             synchronize: false,
-            database: this.configService.get<string>('DB_NAME'),
             migrations: [__dirname + '/../migrations/*.ts'],
             migrationsRun: true,
             autoLoadEntities: true,
         };
+
+        switch (process.env.NODE_ENV) {
+            case 'development':
+                Object.assign(dbConfig, {
+                    type: 'sqlite',
+                    database: this.configService.get<string>('DB_NAME'),
+                });
+                break;
+            case 'test':
+                Object.assign(dbConfig, {
+                    type: 'sqlite',
+                    database: this.configService.get<string>('DB_NAME'),
+                });
+                break;
+            case 'production':
+                Object.assign(dbConfig, {
+                    type: 'postgres',
+                    url: process.env.DATABASE_URL,
+                    ssl: { rejectUnauthorized: false },
+                });
+                break;
+            default:
+                throw new Error('enviroment is not provided');
+        }
+
+        return dbConfig;
     }
 }
