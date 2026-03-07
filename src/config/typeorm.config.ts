@@ -13,7 +13,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             autoLoadEntities: true,
         };
 
-        switch (process.env.NODE_ENV) {
+        switch (process.env.NODE_ENV ?? 'development') {
             case 'development':
                 Object.assign(dbConfig, {
                     type: 'sqlite',
